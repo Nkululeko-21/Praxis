@@ -6,10 +6,11 @@ import { Reveal } from './ui';
  * the scroll sequence belongs to the home page only, and repeating it on
  * every page would make it decoration rather than an introduction.
  */
-export default function PageHeader({ eyebrow, title, lede, children }) {
+export default function PageHeader({ eyebrow, title, lede, backdrop, children }) {
   return (
-    <section>
-      <div className="shell pb-16 pt-[136px] lg:pb-24 lg:pt-[184px]">
+    <section className="relative overflow-hidden">
+      <div className="shell relative pb-16 pt-[136px] lg:pb-24 lg:pt-[184px]">
+        {backdrop}
         <Reveal>
           <p className="t-label text-quiet">{eyebrow}</p>
         </Reveal>

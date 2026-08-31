@@ -1,4 +1,5 @@
 import PageHeader from '../components/PageHeader';
+import Backdrop from '../components/Backdrop';
 import PipelineDiagram from '../components/PipelineDiagram';
 import CTABand from '../components/CTABand';
 import { Reveal } from '../components/ui';
@@ -44,6 +45,9 @@ export default function HowItWorks() {
   return (
     <>
       <PageHeader
+        backdrop={
+          <Backdrop shape="dashboard" className="hidden lg:block right-16 top-[196px] w-[300px]" />
+        }
         eyebrow="How it works"
         title="Trigger, filter, intelligence, formatter, action, output."
         lede="Every workflow we build is assembled from these six stages, in this order. Knowing the sequence is what lets you read your own system later — and what lets you tell whether a proposal you get from anyone else is complete."

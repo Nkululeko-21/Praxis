@@ -285,7 +285,7 @@ export default function About() {
 
               <Reveal delay={180}>
                 <div className="mt-12 text-quiet">
-                  <Logo size={24} />
+                  <Logo height={56} />
                 </div>
               </Reveal>
             </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Logo, ButtonLink, TextLink } from './ui';
+import { Logo, LogoResponsive, ButtonLink, TextLink } from './ui';
 import { EMAIL, WHATSAPP_DISPLAY, whatsappLink, mailtoLink, MESSAGES, LOCATION } from '../lib/contact';
 
 const NAV = [
@@ -42,8 +42,8 @@ function Header() {
     >
       <div className={scrolled || open ? 'border-b border-[color:var(--hair)]' : ''}>
         <div className="shell flex h-[72px] items-center justify-between gap-6">
-          <Link to="/" className="text-warm" aria-label="Praxis, home">
-            <Logo size={21} />
+          <Link to="/" className="flex items-center text-warm" aria-label="Praxis, home">
+            <LogoResponsive height={46} />
           </Link>
 
           <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
@@ -133,7 +133,7 @@ function Footer() {
         <div className="shell py-16 lg:py-20">
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">
-              <Logo size={26} />
+              <Logo height={58} />
               <p className="t-body measure mt-8 text-warm/80">
                 Praxis builds automation, reporting and AI workflows for businesses in
                 Eswatini and the region. If the work repeats, it can usually be handed

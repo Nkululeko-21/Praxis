@@ -1,6 +1,7 @@
 import ScrollHero from '../components/ScrollHero';
 import PipelineDiagram from '../components/PipelineDiagram';
 import CTABand from '../components/CTABand';
+import Backdrop from '../components/Backdrop';
 import { SectionHead, LineItem, Reveal, TextLink } from '../components/ui';
 import { SERVICES } from '../lib/services';
 
@@ -34,8 +35,12 @@ export default function Home() {
       <ScrollHero />
 
       {/* ---- 01 the problem ---------------------------------------- */}
-      <section className="hairline">
-        <div className="shell section-pad">
+      <section className="hairline relative overflow-hidden">
+        <div className="shell section-pad relative">
+          {/* In the empty columns beside the heading, never behind it — §14.
+              Anchored inside the shell so it tracks the 1240px grid rather
+              than the viewport edge. */}
+          <Backdrop shape="nodes" className="hidden lg:block right-16 top-[128px] w-[300px]" />
           <SectionHead
             index="01"
             eyebrow="The problem"
@@ -119,8 +124,9 @@ export default function Home() {
       </section>
 
       {/* ---- 04 proof ------------------------------------------------ */}
-      <section className="hairline">
-        <div className="shell section-pad">
+      <section className="hairline relative overflow-hidden">
+        <div className="shell section-pad relative">
+          <Backdrop shape="ledger" className="hidden lg:block right-16 top-[136px] w-[248px]" />
           <SectionHead
             index="04"
             eyebrow="What it is worth"

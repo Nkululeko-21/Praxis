@@ -3,6 +3,7 @@ import { Reveal, ButtonLink } from '../components/ui';
 import { SERVICES } from '../lib/services';
 import { whatsappLink, MESSAGES } from '../lib/contact';
 import PageHeader from '../components/PageHeader';
+import Backdrop from '../components/Backdrop';
 
 /* Before and after, as two ruled columns. The difference is carried by
    type colour and by the rule, not by red and green — §12 rules out
@@ -46,6 +47,9 @@ export default function Services() {
   return (
     <>
       <PageHeader
+        backdrop={
+          <Backdrop shape="flow" className="hidden lg:block right-16 top-[176px] w-[320px]" />
+        }
         eyebrow="Services"
         title="Three pillars, and the workflows built on top of them."
         lede="Each of these removes a specific, countable task from somebody's week. Scope, timeline and cost are stated before the work begins and revised in writing if they change."

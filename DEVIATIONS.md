@@ -161,23 +161,67 @@ size is exactly as specified at all widths.
 
 ---
 
-## 7. The logo uses live type, not the outlined master
+## 7. The logo master is generated, not supplied
 
-**Guideline** §33.11 and §34 require the outlined master file; a logo that
-references a font renders differently, or not at all, on a machine without it.
+**Guideline** §33.11 and §34 require outlined paths; a logo file that
+references a font renders differently, or not at all, on a machine without
+that font.
 
-**What was built** The wordmark is set in Instrument Serif as live text, with
-the two rules constructed as filled blocks from the §07 ratios — rule weight
-0.045x floored at 1px, gap 0.09x, exactly twice the weight.
+**What was built** No master was supplied, so `tools/build-logo.py` produces
+one: it outlines the Instrument Serif glyphs for "Praxis" into a single path
+and lays the two rules against the cap height using the §07 ratios, reading
+every measurement off the font's own metrics rather than approximating.
 
-**Why** The master SVG was not supplied. Instrument Serif is self-hosted with
-the page, so the specific failure §34 warns about cannot occur here, but this
-should still be replaced with the real master before launch. It is the one
-deviation in this list that is a gap rather than a decision.
+    cap height (x)          720 units, from OS/2 sCapHeight
+    rule weight   0.045x =  32.4
+    gap           0.09x  =  64.8      exactly twice the rule weight
+    rule top      0.24x  =  172.8     from the baseline
+    rule width            =  2077     flush to the glyph extremes, not the
+                                      advance width
+
+The same script writes the §08 colourways, the §30 icon masters with their
+optical weight corrections, the §34 export set and file naming, and
+`src/components/PraxisMark.jsx`, so the site and the export files cannot
+drift apart. Nothing in the app is set in live type.
+
+**What remains** This is a faithful construction from the specification, but
+it is not a designer's master. If one exists, replace the SVGs in
+`public/brand/` and regenerate. The construction ratios will match.
 
 ---
 
-## 8. Proof is modelled, not claimed
+## 8. Section backdrops
+
+**Guideline** §17 says Praxis does not use illustration, and that a concept
+needing visual explanation is drawn as a diagram: hairline rules, bone fills,
+no colour beyond the palette, no perspective. §18.04 asks for air over
+ornament.
+
+**What was built** Four procedural backdrops — a node graph, a ruled
+statement, converging dataflow lanes, and a dashboard — placed once each on
+the home, services and how-it-works pages.
+
+**Why** The brief asks for abstract background visuals throughout. These are
+drawn as diagrams rather than illustration, in hairlines, in palette colours,
+orthogonal and without perspective, so they satisfy §17 as written.
+
+**What keeps this from being ornament** Two rules, both enforced in
+`Backdrop.jsx`. They occupy the empty columns rather than sitting behind
+copy — §14 says body text lives in columns 1–7 and that the remaining
+columns are a deliberate part of the layout, and these live there, measured
+to align with the grid rather than the viewport. And opacity is capped at
+0.16, under the 20% the brief allows, on figures that are already hairlines.
+Nothing is ever placed behind a paragraph and then dimmed until it is
+tolerable. They are hidden entirely below 1024px, where there are no empty
+columns to put them in.
+
+**Also** The geometry is generated once from a fixed seed, so it is identical
+on every render and reload. A texture that reshuffles on re-render is a
+distraction.
+
+---
+
+## 9. Proof is modelled, not claimed
 
 Not a deviation from a rule but a decision worth recording. No client names,
 testimonials, results or figures appear anywhere on the site, because none

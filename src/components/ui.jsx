@@ -1,62 +1,50 @@
 import { Link } from 'react-router-dom';
 import { useReveal } from '../lib/useReveal';
+import PraxisMark, { PraxisIcon, MIN_HEIGHT_PX } from './PraxisMark';
 
 /* ==================================================================
-   Logo — §06, §07
+   Logo — §06, §07, §10, §30
 
-   A wordmark closed by two accounting rules. All dimensions derive from
-   the cap height of the P, written as x in the guidelines. Instrument
-   Serif's cap height is ~0.70em, so:
+   The mark itself is generated: `tools/build-logo.py` outlines the
+   Instrument Serif glyphs and lays the two rules against the cap height
+   using the §07 ratios, then writes both `PraxisMark.jsx` and the export
+   files in `public/brand/`. §33.11 forbids re-setting the wordmark in live
+   type, and generating from one source also stops the site and the export
+   files drifting apart.
 
-     rule weight       0.045x  ->  0.0315em, floored at 1px per §07
-     gap between rules 0.09x   ->  0.063em  (exactly twice the weight)
-     baseline to rule  0.24x   ->  0.168em
-
-   The rules are filled blocks, not strokes, per §07. Rule and wordmark
-   always share one colour (§33.03), so both inherit currentColor.
+   These wrappers add the one rule that is a layout decision rather than a
+   drawing one: §10 sets the screen minimum at 90px wide, below which the
+   two rules merge into one — and a single rule is an unverified subtotal,
+   which inverts the meaning of the mark. So `Logo` refuses to render below
+   that width and `LogoResponsive` sends narrow spaces to the icon instead,
+   which is what §08 and §10 both prescribe.
    ================================================================== */
-export function Logo({ className = '', size = 22 }) {
-  const x = size * 0.70;
-  const weight = Math.max(1, x * 0.045);
-  const gap = x * 0.09;
+export function Logo({ height = MIN_HEIGHT_PX, className = '' }) {
+  return <PraxisMark height={Math.max(height, MIN_HEIGHT_PX)} className={className} />;
+}
 
+/** The wordmark where it fits, the icon where it does not. */
+export function LogoResponsive({ height = MIN_HEIGHT_PX, className = '' }) {
   return (
-    <span
-      className={`inline-flex flex-col ${className}`}
-      style={{ fontSize: `${size}px` }}
-      aria-label="Praxis"
-      role="img"
-    >
-      <span
-        style={{
-          fontFamily: 'var(--font-display)',
-          lineHeight: 1,
-          letterSpacing: '0.005em',   /* §06 — +0.5% tracking */
-          paddingBottom: `${x * 0.168}px`,
-        }}
-        aria-hidden="true"
-      >
-        Praxis
+    <>
+      <span className={`hidden sm:block ${className}`}>
+        <PraxisMark height={Math.max(height, MIN_HEIGHT_PX)} />
       </span>
-      {/* Two rules. Never one — a single rule is an unverified subtotal, §33.01 */}
-      <span aria-hidden="true" style={{ height: `${weight}px`, background: 'currentColor' }} />
-      <span aria-hidden="true" style={{ height: `${gap}px` }} />
-      <span aria-hidden="true" style={{ height: `${weight}px`, background: 'currentColor' }} />
-    </span>
+      {/* The icon is a charcoal tile by default, which disappears on a
+          charcoal header — so it reverses here, the same way §08 reverses
+          the wordmark to warm white on charcoal. */}
+      <span
+        className={`sm:hidden ${className}`}
+        style={{ '--icon-bg': '#FAF8F4', '--icon-fg': '#14161A' }}
+      >
+        <PraxisIcon size={34} />
+      </span>
+    </>
   );
 }
 
-/* The favicon mark, §30 — a serif P in a charcoal square, no rules. */
-export function IconMark({ size = 28, className = '' }) {
-  return (
-    <span
-      className={`inline-grid place-items-center bg-warm text-charcoal ${className}`}
-      style={{ width: size, height: size, borderRadius: size * 0.18 }}
-      aria-hidden="true"
-    >
-      <span style={{ fontFamily: 'var(--font-display)', fontSize: size * 0.62, lineHeight: 1 }}>P</span>
-    </span>
-  );
+export function IconMark({ size = 32, className = '' }) {
+  return <PraxisIcon size={size} className={className} />;
 }
 
 /* ==================================================================

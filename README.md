@@ -31,6 +31,8 @@ src/
     ui.jsx               Logo, Reveal, buttons, SectionHead, LineItem
     Layout.jsx           header with the persistent audit button, oxblood footer band
     ScrollHero.jsx       the canvas frame scrub
+    PraxisMark.jsx       GENERATED — the outlined wordmark and icon
+    Backdrop.jsx         the procedural section backdrops
     PipelineDiagram.jsx  the six-stage workflow diagram
     PageHeader.jsx       inner-page opening block
     CTABand.jsx          the section CTA, used on every page
@@ -46,12 +48,18 @@ src/
 tools/
   hero-frame.html        the hero animation, as a deterministic renderFrame(t)
   build-hero-frames.mjs  renders it, encodes an MP4, extracts the WebP sequence
+  build-logo.py          outlines the wordmark and writes the whole brand set
+  _raster.mjs            SVG to PNG, used by build-logo.py
   verify.mjs             drives the built site in Chromium and checks it
   score-check.mjs        prints the audit result for five answer profiles
 public/
   hero-frames/           150 WebP frames, 0.7 MB total
   hero-source.mp4        the source video the frames were extracted from
   fonts/                 Instrument Serif and Inter, self-hosted
+  brand/                 the logo export set, generated
+  favicon.ico            16, 32, 48 — three distinct masters, per §30
+  favicon.svg            the 64px master
+  apple-touch-icon.png   180px
 ```
 
 ## Changing things
@@ -172,11 +180,38 @@ renders the hero as a still and stops the diagram's travelling packet.
 Contrast: `quiet` on charcoal is 7.3:1, `ember` on charcoal 4.6:1, warm white
 on charcoal 15.8:1.
 
+## The logo
+
+`tools/build-logo.py` is the source of truth for the mark. It outlines the
+Instrument Serif glyphs, lays the two rules against the cap height using the
+§07 ratios, and writes:
+
+- the five §08 colourways into `public/brand/`, named per §34
+- the §30 icon masters at 512, 180, 64, 48, 32, 24 and 16px, each drawn
+  separately with the optical weight correction from that table (+4% at 32px,
+  +6% at 24, +8% at 16) rather than scaled down from the largest
+- `favicon.ico` bundling three distinct masters, `favicon.svg`, and
+  `apple-touch-icon.png`
+- `src/components/PraxisMark.jsx`, which the site imports
+
+Do not edit `PraxisMark.jsx` by hand. Run:
+
+```bash
+pip install fonttools brotli pillow
+python3 tools/build-logo.py
+```
+
+§10 sets the screen minimum at 90px wide, below which the two rules merge and
+a single rule reads as an unverified subtotal. `Logo` will not render smaller
+than that, and `LogoResponsive` falls back to the icon in narrow spaces —
+which is why the header shows the wordmark from 640px up and the icon tile
+below it.
+
 ## Outstanding — to supply before launch
 
-- The outlined logo master (`praxis-logo-primary-reversed.svg`). The wordmark
-  is currently rebuilt from live Instrument Serif to the §07 ratios; see
-  `DEVIATIONS.md` §7.
+- A designer's logo master, if one exists. The current files are constructed
+  from the §07 specification and are faithful to it, but they were derived
+  rather than drawn; see `DEVIATIONS.md` §7.
 - Real proof. The home page's worked example is explicitly labelled as modelled
   figures for a ten-person business. No client names, testimonials or results
   appear anywhere, because none were supplied.
@@ -184,3 +219,5 @@ on charcoal 15.8:1.
 - Team, history and any accreditations for the About page, if wanted.
 - Confirmation of the stated working hours and the service timelines in
   `src/lib/services.js`, which are placeholders in the right shape.
+- A decision on the AI-generated hero clip. The procedural one ships now; see
+  "The hero source video" above for the one command that swaps it.
