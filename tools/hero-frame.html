@@ -1,0 +1,253 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Praxis hero source</title>
+<style>
+  html,body{margin:0;background:#0b0c0e}
+  canvas{display:block}
+</style>
+<canvas id="c" width="1600" height="900"></canvas>
+<script>
+/* ------------------------------------------------------------------
+   Praxis — hero source animation.
+
+   Deterministic: renderFrame(t) with t in [0,1] draws one exact frame.
+   No requestAnimationFrame, no Math.random at draw time — the build
+   script steps t and screenshots, so the sequence is reproducible.
+
+   The beat: repetitive manual work (a scattered field of task marks)
+   is drawn into a six-stage pipeline, passes through it, and resolves
+   into a ruled ledger closed by the double rule from the logo.
+
+   Palette is the brand palette. Charcoal ground, warm-white hairlines,
+   bone figures, one oxblood mark at the close.
+------------------------------------------------------------------- */
+
+const C = {
+  ground:   '#14161A',
+  warm:     '#FAF8F4',
+  bone:     '#EFE9DE',
+  oxblood:  '#6B2028',
+  slate:    '#4A5259',
+};
+
+const W = 1600, H = 900;          // viewport
+const WORLD_PAN = 1780;           // how far the camera travels
+const ctx = document.getElementById('c').getContext('2d');
+
+/* ---- deterministic PRNG (mulberry32) ---------------------------- */
+function rng(seed) {
+  return function () {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/* ---- easing ----------------------------------------------------- */
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const easeOut  = t => 1 - Math.pow(1 - t, 3);
+const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const range = (t, a, b) => clamp((t - a) / (b - a));
+
+/* ---- scene geometry (virtual world coordinates) ----------------- */
+const AXIS_Y   = 452;
+const CHAOS    = { x: 880, y: 150, w: 520, h: 600 };
+const NODE_X   = [1580, 1784, 1988, 2192, 2396, 2600];
+const NODE_R   = 30;                       // half-size of a station square
+const LEDGER_X = 2790, LEDGER_W = 400;
+const LEDGER_ROWS = 13;
+const LEDGER_Y0 = 214, LEDGER_DY = 34;
+
+/* ---- particles: one per unit of repetitive work ----------------- */
+const PARTICLES = (() => {
+  const r = rng(20260731);
+  const out = [];
+  const n = 132;
+  for (let i = 0; i < n; i++) {
+    const row = i % LEDGER_ROWS;
+    out.push({
+      ox: CHAOS.x + r() * CHAOS.w,
+      oy: CHAOS.y + r() * CHAOS.h,
+      size: 3 + Math.round(r() * 3),
+      phase: r() * Math.PI * 2,
+      drift: 0.4 + r() * 1.4,
+      start: 0.05 + (i / n) * 0.52 + r() * 0.05,   // staggered departure
+      dur:   0.30 + r() * 0.12,
+      row,
+      lane: (r() - 0.5) * 46,                       // vertical offset in the pipe
+    });
+  }
+  return out;
+})();
+
+/* ---- small drawing helpers -------------------------------------- */
+function hair(a) { return `rgba(250,248,244,${a})`; }
+
+function line(x1, y1, x2, y2, colour, w = 1) {
+  ctx.strokeStyle = colour; ctx.lineWidth = w;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+}
+
+function rect(x, y, w, h, colour) { ctx.fillStyle = colour; ctx.fillRect(x, y, w, h); }
+
+function strokeRect(x, y, w, h, colour, lw = 1) {
+  ctx.strokeStyle = colour; ctx.lineWidth = lw;
+  ctx.strokeRect(x + 0.5, y + 0.5, w, h);
+}
+
+/* ---- background: orthogonal grid, no perspective ---------------- */
+function drawGrid(t, camX) {
+  const a = 0.045 + 0.02 * Math.sin(t * Math.PI);
+  const step = 80;
+  const first = Math.floor(camX / step) * step;
+  for (let x = first; x < camX + W + step; x += step) line(x, 0, x, H, hair(a * 0.7));
+  for (let y = 0; y < H + step; y += step)            line(camX, y, camX + W, y, hair(a * 0.7));
+}
+
+/* ---- zone 1: the chaos field ------------------------------------ */
+function drawChaos(t) {
+  // The field thins out as its work is drawn into the pipeline.
+  strokeRect(CHAOS.x - 34, CHAOS.y - 40, CHAOS.w + 68, CHAOS.h + 80, hair(0.10 * (1 - range(t, .55, .8))));
+
+  for (const p of PARTICLES) {
+    const u = range(t, p.start, p.start + p.dur);
+    if (u > 0) continue;                       // already departed — drawn by drawFlow
+    const jx = Math.sin(t * 9 + p.phase) * p.drift;
+    const jy = Math.cos(t * 7.3 + p.phase) * p.drift;
+    rect(p.ox + jx, p.oy + jy, p.size, p.size, hair(0.34));
+  }
+}
+
+/* ---- particle path ---------------------------------------------- */
+// 0.00-0.28  chaos origin  -> pipeline mouth
+// 0.28-0.78  along the pipeline axis, through the six stations
+// 0.78-1.00  station six   -> its ledger row
+function particleAt(p, u) {
+  const mouthX = NODE_X[0] - 120, mouthY = AXIS_Y + p.lane;
+  const exitX  = NODE_X[5] + 78;
+  const rowY   = LEDGER_Y0 + p.row * LEDGER_DY;
+
+  if (u < 0.28) {
+    const k = easeInOut(u / 0.28);
+    return [p.ox + (mouthX - p.ox) * k, p.oy + (mouthY - p.oy) * k, 1];
+  }
+  if (u < 0.78) {
+    const k = (u - 0.28) / 0.50;
+    // converge toward the axis as it travels the pipe
+    const lane = p.lane * (1 - easeOut(k));
+    return [mouthX + (exitX - mouthX) * k, AXIS_Y + lane, 1];
+  }
+  const k = easeInOut((u - 0.78) / 0.22);
+  return [exitX + (LEDGER_X - 26 - exitX) * k, AXIS_Y + (rowY - AXIS_Y) * k, 1 - k * 0.85];
+}
+
+function drawFlow(t) {
+  for (const p of PARTICLES) {
+    const u = range(t, p.start, p.start + p.dur);
+    if (u <= 0 || u >= 1) continue;
+    const [x, y, a] = particleAt(p, u);
+    rect(x, y, p.size, p.size, hair(0.30 + 0.55 * a));
+  }
+}
+
+/* ---- zone 2: the six-stage pipeline ------------------------------ */
+function drawPipeline(t) {
+  const x0 = NODE_X[0] - 120, x1 = NODE_X[5] + 120;
+
+  // the spine draws itself in
+  const spine = easeOut(range(t, 0.06, 0.60));
+  line(x0, AXIS_Y, x0 + (x1 - x0) * spine, AXIS_Y, hair(0.22));
+
+  NODE_X.forEach((nx, i) => {
+    // each station wakes in sequence
+    const on  = range(t, 0.10 + i * 0.075, 0.22 + i * 0.075);
+    const lit = easeOut(on);
+    if (lit <= 0) return;
+
+    const s = NODE_R * (0.72 + 0.28 * lit);
+    strokeRect(nx - s, AXIS_Y - s, s * 2, s * 2, hair(0.16 + 0.32 * lit), 1);
+
+    // inner mark — a filled tick that settles once the station is live
+    const inner = 5 + 5 * lit;
+    rect(nx - inner / 2, AXIS_Y - inner / 2, inner, inner, hair(0.20 + 0.55 * lit));
+
+    // index rule above each station (the numbered-section device)
+    const ia = 0.30 * lit;
+    line(nx - 14, AXIS_Y - NODE_R - 26, nx + 14, AXIS_Y - NODE_R - 26, hair(ia));
+    line(nx - 14, AXIS_Y - NODE_R - 22, nx + 14, AXIS_Y - NODE_R - 22, hair(ia));
+  });
+}
+
+/* ---- zone 3: the ledger, closed by a double rule ----------------- */
+function drawLedger(t) {
+  const r = rng(884411);
+  const appear = range(t, 0.42, 0.92);
+
+  for (let i = 0; i < LEDGER_ROWS; i++) {
+    const y = LEDGER_Y0 + i * LEDGER_DY;
+    const rowOn = clamp(appear * LEDGER_ROWS - i);
+    if (rowOn <= 0) { r(); r(); continue; }
+    const k = easeOut(rowOn);
+
+    // hairline the row sits on
+    line(LEDGER_X, y + 13, LEDGER_X + LEDGER_W * k, y + 13, hair(0.13));
+
+    // left: the description, as a short bone rule
+    const lw = (70 + r() * 120) * k;
+    rect(LEDGER_X, y + 4, lw, 2, `rgba(239,233,222,${0.30 * k})`);
+
+    // right: the figure, right-aligned
+    const fw = (34 + r() * 42) * k;
+    rect(LEDGER_X + LEDGER_W - fw, y + 3, fw, 4, `rgba(239,233,222,${0.62 * k})`);
+  }
+
+  // the close: total, then the double rule beneath it
+  const totalY = LEDGER_Y0 + LEDGER_ROWS * LEDGER_DY + 22;
+  const close = easeOut(range(t, 0.86, 0.99));
+  if (close > 0) {
+    const fw = 116 * close;
+    rect(LEDGER_X + LEDGER_W - fw, totalY - 8, fw, 7, C.oxblood);
+    const rw = LEDGER_W * close;
+    rect(LEDGER_X + LEDGER_W - rw, totalY + 10, rw, 2, hair(0.72));
+    rect(LEDGER_X + LEDGER_W - rw, totalY + 16, rw, 2, hair(0.72));
+  }
+}
+
+/* ---- the frame --------------------------------------------------- */
+function renderFrame(t) {
+  t = clamp(t);
+
+  // camera: a slow orthogonal pan with a slight push-in
+  const camX  = easeInOut(t) * WORLD_PAN;
+  const scale = 1 + easeInOut(t) * 0.07;
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = C.ground;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.save();
+  ctx.translate(W / 2, H / 2);
+  ctx.scale(scale, scale);
+  ctx.translate(-W / 2 - camX, -H / 2);
+
+  drawGrid(t, camX);
+  drawChaos(t);
+  drawPipeline(t);
+  drawFlow(t);
+  drawLedger(t);
+
+  ctx.restore();
+
+  // vignette so the hero copy always wins against the frame
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0,    'rgba(20,22,26,0.50)');
+  g.addColorStop(0.45, 'rgba(20,22,26,0.06)');
+  g.addColorStop(1,    'rgba(20,22,26,0.62)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+}
+
+window.renderFrame = renderFrame;
+renderFrame(0);
+</script>

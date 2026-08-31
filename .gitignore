@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.frame-cache/
+*.local
+.DS_Store

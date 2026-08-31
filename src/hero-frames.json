@@ -1,0 +1,6 @@
+{
+  "count": 150,
+  "width": 1280,
+  "fps": 30,
+  "pattern": "/hero-frames/frame_%04d.webp"
+}
