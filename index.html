@@ -231,6 +231,22 @@
     .kqr-cta-btn{background:#111;color:white;padding:15px 20px;text-transform:uppercase;letter-spacing:.08em;font-size:11px;white-space:nowrap}
     .kqr-restart{display:block;margin:25px auto 0;background:none;border:0;color:#8a867d;text-decoration:underline;cursor:pointer;font-size:11px}
     .kqr-footnote{font-size:10px;color:#77736b;margin-top:16px}
+    .project-form-wrap{margin-top:50px;padding-top:40px;border-top:1px solid #303030;display:grid;grid-template-columns:1fr 1.15fr;gap:50px;align-items:start}
+    .project-form-intro h3{font:clamp(32px,4vw,48px)/1.05 Georgia,serif;margin:8px 0 14px;letter-spacing:-.03em}
+    .project-form-intro p{color:#aaa69d;max-width:430px;font-size:14px}
+    .project-form{display:grid;gap:14px}
+    .project-form .field{display:grid;gap:7px}
+    .project-form label{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#aaa69d}
+    .project-form input,.project-form textarea,.project-form select{width:100%;box-sizing:border-box;padding:14px;border:1px solid #4a4a4a;background:#17181b;color:#fff;font:inherit;border-radius:3px;outline:none}
+    .project-form textarea{min-height:120px;resize:vertical}
+    .project-form input:focus,.project-form textarea:focus,.project-form select:focus{border-color:#d6c7ab}
+    .project-form .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .project-form select{appearance:auto}
+    .project-form button{margin-top:5px;border:0;background:#f4f1eb;color:#111;padding:16px 20px;text-transform:uppercase;letter-spacing:.1em;font-size:11px;cursor:pointer}
+    .project-form button:disabled{opacity:.55;cursor:wait}
+    .form-status{font-size:12px;min-height:18px;color:#aaa69d}
+    .form-status.success{color:#d6c7ab}
+    .form-status.error{color:#d08a80}
 
     @media(max-width:850px){
       .nav-links{
@@ -277,6 +293,7 @@
       .process-grid{grid-template-columns:1fr 1fr}
       .step:nth-child(3){border-left:0;padding-left:0}
       .step:nth-child(2),.step:nth-child(4){padding-left:24px}
+      .project-form-wrap{grid-template-columns:1fr;gap:30px}
     }
     @media(max-width:560px){
       .container{width:min(calc(100% - 30px),var(--max))}
@@ -294,6 +311,7 @@
       }
       .service{min-height:auto;padding-bottom:32px}
       .case{min-height:270px}
+      .project-form .two{grid-template-columns:1fr}
       .footer-inner{display:block}
       .footer-inner div+div{margin-top:8px}
     }
@@ -548,13 +566,36 @@
       <h2>What repetitive work is slowing your business down?</h2>
       <p>
         Send us the problem in plain language. You don't need a technical specification.
-        We'll help you identify what can be automated and what the simplest solution could look like.
+        We'll review the process and come prepared for a focused 20-minute conversation.
       </p>
-      <div class="hero-actions">
-        <a class="btn primary" href="https://wa.me/26878884993?text=Hello%20Praxis%2C%20I%27d%20like%20to%20discuss%20an%20automation%20project." target="_blank" rel="noopener">Message on WhatsApp</a>
-        <a class="btn ghost" href="mailto:praxis.digital.sz@gmail.com?subject=Automation%20Project%20Enquiry">Send an email</a>
+
+      <div class="project-form-wrap" id="project-enquiry">
+        <div class="project-form-intro">
+          <div class="eyebrow" style="color:#77736b">Project enquiry</div>
+          <h3>Tell Praxis what needs to change.</h3>
+          <p>Give us enough context to understand the process. We will use your answers to prepare for the conversation.</p>
+        </div>
+
+        <form class="project-form" id="projectForm">
+          <div class="two">
+            <div class="field"><label for="projectName">Name</label><input id="projectName" name="name" autocomplete="name" required placeholder="Your name"></div>
+            <div class="field"><label for="projectBusiness">Business</label><input id="projectBusiness" name="business" autocomplete="organization" required placeholder="Business name"></div>
+          </div>
+          <div class="two">
+            <div class="field"><label for="projectEmail">Email</label><input id="projectEmail" name="email" type="email" autocomplete="email" required placeholder="you@company.com"></div>
+            <div class="field"><label for="projectPhone">WhatsApp / Phone</label><input id="projectPhone" name="phone" autocomplete="tel" placeholder="+268 ..."></div>
+          </div>
+          <div class="field"><label for="projectNeed">What would you like to automate?</label><select id="projectNeed" name="need" required><option value="" selected disabled>Select an area</option><option>Lead capture and follow-up</option><option>Sales / quotations</option><option>Invoices and payments</option><option>HR / onboarding</option><option>Reporting and dashboards</option><option>Data entry / spreadsheets</option><option>Customer communication</option><option>Something else</option></select></div>
+          <div class="field"><label for="projectProblem">What is happening now?</label><textarea id="projectProblem" name="problem" required placeholder="For example: every week we copy information from WhatsApp into Excel and then prepare a report manually."></textarea></div>
+          <div class="field"><label for="projectTools">What tools do you currently use?</label><input id="projectTools" name="tools" placeholder="Excel, Google Sheets, WhatsApp, Xero, etc."></div>
+          <div class="field"><label for="projectFrequency">How often does this happen?</label><select id="projectFrequency" name="frequency"><option value="Daily">Daily</option><option value="Several times a week">Several times a week</option><option value="Weekly">Weekly</option><option value="Monthly">Monthly</option><option value="Occasionally">Occasionally</option></select></div>
+          <div class="form-status" id="projectStatus" aria-live="polite"></div>
+          <button type="submit" id="projectSubmit">Submit →</button>
+          <div class="kqr-footnote">No technical specification is required. We'll contact you using the details you provide.</div>
+        </form>
       </div>
     </div>
+
     <div class="contact-card">
       <div class="contact-row">
         <div class="contact-label">Email</div>
@@ -629,7 +670,7 @@
    *   set PRAXIS_AUDIT_ENDPOINT to your POST URL below.
    *   The component will POST {name,email,answers,score,tier,categoryBreakdown}.
    */
-  const PRAXIS_AUDIT_ENDPOINT = "https://script.google.com/macros/s/AKfycbwRKTqKo_2t7H22jw396158pbyiiNZvgpWr8Q8BAveSz6nYjrc9DhbF4B6HMxYqqfXO/exec";
+  const PRAXIS_AUDIT_ENDPOINT = "https://script.google.com/macros/s/AKfycbzyb09GNRo-vUUoOwBjSsQQdfu52EGa-B0qrnIxeiWym1J-vx9RePGdyc5_aXJODvHV/exec";
 
   const questions = [
     {category:"Foundation", q:"How clearly are your core business processes documented?", a:[
@@ -791,33 +832,7 @@
   }
 
   function renderLeadGate(){
-    progressText.textContent="Assessment complete";
-    percent.textContent="100%";
-    progressBar.style.width="100%";
-    stage.innerHTML=`
-      <div class="kqr-gate">
-        <div class="kqr-category">Your results are ready</div>
-        <h3>One last step before we reveal your score.</h3>
-        <p>Enter your name and email to receive your personalised Business Readiness result and the areas where Praxis can help you automate.</p>
-        <form class="kqr-form" id="kqrLeadForm">
-          <div class="kqr-field"><label for="kqrName">Name</label><input id="kqrName" name="name" autocomplete="name" required placeholder="Your name"></div>
-          <div class="kqr-field"><label for="kqrEmail">Email</label><input id="kqrEmail" name="email" type="email" autocomplete="email" required placeholder="you@company.com"></div>
-          <div class="kqr-error" id="kqrError"></div>
-          <button class="kqr-submit" type="submit">Reveal my readiness score →</button>
-          <div class="kqr-footnote">Your details are used to follow up about your audit. No spam.</div>
-        </form>
-      </div>`;
-    stage.querySelector("#kqrLeadForm").addEventListener("submit",e=>{
-      e.preventDefault();
-      const fd=new FormData(e.currentTarget);
-      state.lead={name:String(fd.get("name")).trim(),email:String(fd.get("email")).trim()};
-      if(!state.lead.name || !/^\S+@\S+\.\S+$/.test(state.lead.email)){
-        stage.querySelector("#kqrError").textContent="Please enter a valid name and email.";
-        return;
-      }
-      renderResults();
-      saveAudit();
-    });
+    renderResults();
   }
 
   function calculate(){
@@ -874,7 +889,7 @@
         </div>
         <div class="kqr-result-cta">
           <p>Want to turn one of these gaps into a working system? Let's identify the highest-value process to automate first.</p>
-          <a class="kqr-cta-btn" href="#contact">Book your free 20-min audit call →</a>
+          <a class="kqr-cta-btn" href="#project-enquiry">Book your free 20-min audit call →</a>
         </div>
         <button class="kqr-restart" type="button" id="kqrRestart">Retake the audit</button>
       </div>`;
@@ -883,44 +898,62 @@
     });
   }
 
-  async function saveAudit(){
-    const result=calculate();
-    const payload={
-      timestamp:new Date().toISOString(),
-      name:state.lead.name,
-      email:state.lead.email,
-      score:result.score,
-      tier:result.tier,
-      answers:questions.map((q,i)=>({
-        category:q.category,
-        question:q.q,
-        answer:state.answers[i]===null?null:q.a[state.answers[i]][0],
-        points:state.answers[i]===null?0:q.a[state.answers[i]][1]
-      })),
-      categoryBreakdown:Object.fromEntries(
-        Object.entries(result.categories).map(([k,v])=>[k,Math.round((v.total/v.max)*100)])
-      )
-    };
+  // KQR is a private assessment. No audit answers, scores or contact details are
+  // sent to Google Sheets. The result is calculated and shown only in the browser.
+  function saveAudit(){ return Promise.resolve(); }
 
-    try{
-      const existing=JSON.parse(localStorage.getItem("praxis_kqr_audits")||"[]");
-      existing.push(payload);
-      localStorage.setItem("praxis_kqr_audits",JSON.stringify(existing));
-    }catch(e){}
-
-    if(PRAXIS_AUDIT_ENDPOINT && !PRAXIS_AUDIT_ENDPOINT.includes("PASTE_YOUR_")){
-      try{
-        // text/plain is intentionally used so Google Apps Script can receive
-        // the request without a browser CORS preflight.
-        await fetch(PRAXIS_AUDIT_ENDPOINT,{
-          method:"POST",
-          headers:{"Content-Type":"text/plain;charset=utf-8"},
-          body:JSON.stringify(payload)
-        });
-      }catch(e){
-        console.warn("Praxis KQR remote storage failed; local fallback retained.",e);
+  const projectForm=document.getElementById("projectForm");
+  if(projectForm){
+    projectForm.addEventListener("submit",async e=>{
+      e.preventDefault();
+      const fd=new FormData(projectForm);
+      const data={
+        type:"project_enquiry",
+        timestamp:new Date().toISOString(),
+        name:String(fd.get("name")||"").trim(),
+        business:String(fd.get("business")||"").trim(),
+        email:String(fd.get("email")||"").trim(),
+        phone:String(fd.get("phone")||"").trim(),
+        need:String(fd.get("need")||"").trim(),
+        problem:String(fd.get("problem")||"").trim(),
+        tools:String(fd.get("tools")||"").trim(),
+        frequency:String(fd.get("frequency")||"").trim()
+      };
+      const status=document.getElementById("projectStatus");
+      const submit=document.getElementById("projectSubmit");
+      if(!data.name||!data.business||!/^\S+@\S+\.\S+$/.test(data.email)||!data.need||!data.problem){
+        status.className="form-status error";
+        status.textContent="Please complete the required fields with a valid email.";
+        return;
       }
-    }
+      submit.disabled=true;
+      status.className="form-status";
+      status.textContent="Sending your enquiry…";
+      try{
+        if(PRAXIS_AUDIT_ENDPOINT){
+          const response=await fetch(PRAXIS_AUDIT_ENDPOINT,{
+            method:"POST",
+            headers:{"Content-Type":"text/plain;charset=utf-8"},
+            body:JSON.stringify(data)
+          });
+          if(!response.ok) throw new Error("Request failed");
+        }else{
+          const existing=JSON.parse(localStorage.getItem("praxis_project_enquiries")||"[]");
+          existing.push(data);
+          localStorage.setItem("praxis_project_enquiries",JSON.stringify(existing));
+        }
+        status.className="form-status success";
+        status.textContent="Enquiry received. Praxis will contact you to arrange the 20-minute call.";
+        projectForm.reset();
+      }catch(err){
+        const existing=JSON.parse(localStorage.getItem("praxis_project_enquiries")||"[]");
+        existing.push(data);
+        localStorage.setItem("praxis_project_enquiries",JSON.stringify(existing));
+        status.className="form-status success";
+        status.textContent="Your enquiry is saved on this device. Please also email or WhatsApp Praxis if you want to arrange the call now.";
+        projectForm.reset();
+      }finally{submit.disabled=false;}
+    });
   }
 
   renderQuestion();
