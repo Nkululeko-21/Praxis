@@ -1,19 +1,931 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#14161A" />
-    <title>Praxis — automation for businesses in Eswatini</title>
-    <meta name="description" content="Praxis removes repetitive work from businesses. Lead automation, accounting and finance automation, reporting and dashboards, and custom AI workflows. Based in Eswatini." />
-    <link rel="preload" href="/fonts/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Praxis Digital Systems Studio — practical business automation using Make.com, Google Sheets, Excel and connected tools." />
+  <title>Praxis — Digital Systems Studio</title>
+  <style>
+    :root{
+      --ink:#111111;
+      --ink2:#1d1d1b;
+      --paper:#f4f1eb;
+      --white:#fbfaf7;
+      --muted:#77736b;
+      --line:#d9d4ca;
+      --accent:#c6a46a;
+      --max:1180px;
+      --radius:2px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      background:var(--paper);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      line-height:1.55;
+    }
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    .serif{font-family:Georgia,"Times New Roman",serif;font-weight:400}
+    .container{width:min(calc(100% - 48px),var(--max));margin:auto}
+    .eyebrow{
+      font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+    }
+    .gold-line{display:inline-block;width:42px;height:1px;background:var(--accent);vertical-align:middle;margin-right:12px}
+
+    /* NAV */
+    nav{
+      position:fixed;z-index:50;top:0;left:0;right:0;
+      background:rgba(244,241,235,.9);backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(17,17,17,.08);
+    }
+    .nav-inner{height:76px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .mark{
+      width:38px;height:38px;background:var(--ink);color:white;
+      display:grid;place-items:center;font:25px Georgia,serif;
+    }
+    .brand-name{font:26px Georgia,serif;letter-spacing:-.03em}
+    .brand-sub{display:block;font-size:8px;letter-spacing:.2em;text-transform:uppercase;margin-top:-3px}
+    .nav-links{display:flex;gap:28px;font-size:13px}
+    .nav-links a{transition:opacity .2s}
+    .nav-links a:hover{opacity:.55}
+    .nav-cta{
+      background:var(--ink);color:white;padding:12px 18px;font-size:12px;
+      letter-spacing:.05em;text-transform:uppercase;
+    }
+    .menu{display:none;border:0;background:none;font-size:24px}
+
+    /* HERO */
+    .hero{
+      min-height:100vh;padding:150px 0 70px;background:var(--ink);color:white;
+      position:relative;overflow:hidden;
+    }
+    .hero:after{
+      content:"";position:absolute;right:-120px;top:-120px;width:520px;height:520px;
+      border:1px solid rgba(255,255,255,.09);border-radius:50%;
+      box-shadow:0 0 0 80px rgba(255,255,255,.015),0 0 0 160px rgba(255,255,255,.01);
+    }
+    .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:80px;align-items:end;min-height:680px}
+    .hero h1{font:clamp(58px,8vw,112px)/.92 Georgia,serif;letter-spacing:-.055em;margin:24px 0 30px;max-width:900px}
+    .hero h1 em{font-style:italic;color:#d6c7ab}
+    .hero-copy{max-width:570px;color:#c9c6bf;font-size:18px}
+    .hero-actions{display:flex;gap:12px;margin-top:36px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:15px 22px;font-size:12px;text-transform:uppercase;letter-spacing:.09em;border:1px solid white}
+    .btn.primary{background:white;color:var(--ink);border-color:white}
+    .btn.ghost{border-color:#555;color:white}
+    .hero-note{
+      border-top:1px solid #393939;padding-top:22px;color:#aaa69d;font-size:12px;
+      max-width:280px;justify-self:end;
+    }
+    .hero-note strong{display:block;color:white;font:30px Georgia,serif;margin-bottom:8px}
+
+    /* INTRO */
+    .intro{padding:120px 0}
+    .intro-grid{display:grid;grid-template-columns:.7fr 1.3fr;gap:80px}
+    .intro h2,.section-head h2{font:clamp(40px,5vw,68px)/1 Georgia,serif;letter-spacing:-.045em;margin:0}
+    .intro-text{font-size:20px;max-width:700px}
+    .intro-text p{margin:0 0 22px}
+
+    /* SERVICES */
+    .dark-section{background:var(--ink);color:white;padding:110px 0}
+    .section-head{display:flex;justify-content:space-between;gap:50px;margin-bottom:65px}
+    .section-head .desc{max-width:430px;color:#aaa69d;font-size:15px}
+    .services{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #333}
+    .service{padding:38px 28px 42px 0;border-bottom:1px solid #333;min-height:250px}
+    .service:not(:nth-child(3n+1)){padding-left:28px;border-left:1px solid #333}
+    .service-number{font-size:11px;color:#8c887f;letter-spacing:.15em}
+    .service h3{font:28px Georgia,serif;margin:34px 0 12px}
+    .service p{color:#aaa69d;font-size:14px;max-width:300px}
+    .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
+    .tag{border:1px solid #3d3d3d;padding:5px 8px;font-size:10px;color:#aaa69d}
+
+    /* PROCESS */
+    .process{padding:115px 0}
+    .process-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+    .step{padding:30px 24px 20px 0;min-height:235px}
+    .step:not(:first-child){padding-left:24px;border-left:1px solid var(--line)}
+    .step-num{font:42px Georgia,serif;color:#aaa}
+    .step h3{font:24px Georgia,serif;margin:22px 0 10px}
+    .step p{font-size:14px;color:#68645d}
+
+    /* USE CASES */
+    .cases{background:#e9e5dd;padding:110px 0}
+    .case-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .case{
+      min-height:310px;background:var(--ink);color:white;padding:35px;
+      position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;
+    }
+    .case:before{
+      content:"";position:absolute;width:230px;height:230px;border:1px solid rgba(255,255,255,.08);
+      border-radius:50%;right:-70px;bottom:-80px;
+    }
+    .case h3{font:36px Georgia,serif;max-width:430px;margin:15px 0}
+    .case p{color:#aaa69d;max-width:460px;font-size:14px}
+    .case .mini{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#d6c7ab}
+
+    /* STACK */
+    .stack{padding:115px 0}
+    .stack-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
+    .stack-copy p{color:#68645d;max-width:530px}
+    .stack-list{border-top:1px solid var(--line)}
+    .stack-item{display:flex;justify-content:space-between;gap:30px;padding:20px 0;border-bottom:1px solid var(--line);font-size:15px}
+    .stack-item span{color:var(--muted);font-size:12px}
+
+    /* CTA */
+    .cta{background:var(--ink);color:white;padding:120px 0}
+    .cta-inner{display:grid;grid-template-columns:1fr .8fr;gap:80px;align-items:end}
+    .cta h2{font:clamp(48px,6vw,84px)/.95 Georgia,serif;letter-spacing:-.05em;margin:20px 0}
+    .cta p{color:#aaa69d;max-width:470px}
+    .contact-card{border-top:1px solid #3b3b3b;padding-top:24px}
+    .contact-row{display:flex;gap:12px;align-items:flex-start;padding:15px 0;border-bottom:1px solid #303030}
+    .contact-label{font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#77736b;width:75px;flex:none}
+    .contact-value{font-size:14px}
+    .contact-value a:hover{text-decoration:underline}
+
+    footer{background:#0a0a0a;color:#77736b;padding:28px 0;font-size:11px}
+    .footer-inner{display:flex;justify-content:space-between;gap:20px}
+
+
+    /* KQR — Interactive Business Readiness Audit */
+    .kqr-section{background:#111;color:white;padding:110px 0;position:relative;overflow:hidden}
+    .kqr-section:before{
+      content:"";position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(120deg,rgba(255,255,255,.025),transparent 45%);
+    }
+    .kqr-shell{position:relative;max-width:900px;margin:auto}
+    .kqr-top{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:42px}
+    .kqr-top h2{font:clamp(42px,5vw,68px)/1 Georgia,serif;letter-spacing:-.045em;margin:10px 0 0}
+    .kqr-intro{color:#aaa69d;max-width:360px;font-size:14px}
+    .kqr-card{
+      background:#f4f1eb;color:#111;padding:clamp(24px,5vw,52px);
+      border:1px solid #292929;box-shadow:0 30px 80px rgba(0,0,0,.22);
+      min-height:530px;position:relative;overflow:hidden;
+    }
+    .kqr-card:after{
+      content:"";position:absolute;width:280px;height:280px;border:1px solid #ddd7cc;border-radius:50%;
+      right:-150px;top:-150px;pointer-events:none;
+    }
+    .kqr-progress-meta{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:10px}
+    .kqr-progress-meta span{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:#77736b}
+    .kqr-progress-track{height:4px;background:#ddd8cf;overflow:hidden}
+    .kqr-progress-bar{height:100%;width:6.666%;background:#111;transition:width .5s cubic-bezier(.22,1,.36,1)}
+    .kqr-stage{min-height:370px;padding-top:42px}
+    .kqr-question-wrap{animation:kqrIn .38s ease both}
+    @keyframes kqrIn{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
+    .kqr-category{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#8a7655;margin-bottom:13px}
+    .kqr-question{font:clamp(29px,4vw,45px)/1.1 Georgia,serif;letter-spacing:-.035em;max-width:720px;margin:0 0 30px}
+    .kqr-options{display:grid;gap:10px}
+    .kqr-option{
+      width:100%;display:flex;align-items:center;gap:14px;text-align:left;
+      border:1px solid #d2cdc3;background:#fbfaf7;padding:16px 17px;cursor:pointer;
+      font:inherit;color:#111;transition:transform .18s,background .18s,border-color .18s;
+    }
+    .kqr-option:hover{transform:translateY(-2px);border-color:#111}
+    .kqr-option .kqr-dot{
+      width:22px;height:22px;border:1px solid #aaa59c;border-radius:50%;display:grid;place-items:center;flex:none;
+    }
+    .kqr-option:hover .kqr-dot:after{content:"";width:7px;height:7px;border-radius:50%;background:#c6a46a}
+    .kqr-nav{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:28px}
+    .kqr-back{background:transparent;border:0;color:#77736b;padding:12px 0;cursor:pointer;font-size:12px}
+    .kqr-next{
+      border:0;background:#111;color:white;padding:14px 20px;cursor:pointer;
+      text-transform:uppercase;letter-spacing:.1em;font-size:11px
+    }
+    .kqr-next:disabled{opacity:.35;cursor:not-allowed}
+    .kqr-gate{animation:kqrIn .4s ease both;max-width:650px}
+    .kqr-gate h3{font:clamp(34px,4vw,48px)/1 Georgia,serif;margin:0 0 14px}
+    .kqr-gate p{color:#68645d;max-width:570px}
+    .kqr-form{display:grid;gap:12px;margin-top:28px}
+    .kqr-field label{display:block;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#77736b;margin-bottom:7px}
+    .kqr-field input{
+      width:100%;padding:15px 14px;border:1px solid #cfc9bf;background:#fff;
+      font:inherit;outline:none
+    }
+    .kqr-field input:focus{border-color:#111;box-shadow:0 0 0 2px rgba(17,17,17,.08)}
+    .kqr-submit{margin-top:5px;background:#111;color:white;border:0;padding:16px 20px;text-transform:uppercase;letter-spacing:.1em;font-size:11px;cursor:pointer}
+    .kqr-error{font-size:12px;color:#8c3e30;min-height:18px}
+    .kqr-results{animation:kqrIn .45s ease both}
+    .kqr-score-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:34px;align-items:stretch}
+    .kqr-score{
+      background:#111;color:white;min-height:230px;padding:28px;display:flex;flex-direction:column;justify-content:space-between
+    }
+    .kqr-score-label{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:#aaa69d}
+    .kqr-score-number{font:clamp(70px,9vw,108px)/.85 Georgia,serif;letter-spacing:-.06em}
+    .kqr-tier{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:#d6c7ab}
+    .kqr-summary h3{font:32px Georgia,serif;margin:0 0 10px}
+    .kqr-summary p{color:#68645d;margin-top:0}
+    .kqr-insights{display:grid;gap:10px;margin-top:18px}
+    .kqr-insight{border-top:1px solid #d8d2c8;padding:12px 0;font-size:13px}
+    .kqr-insight strong{font-weight:600}
+    .kqr-category-bars{margin-top:38px;border-top:1px solid #d8d2c8}
+    .kqr-cat-row{padding:15px 0;border-bottom:1px solid #d8d2c8}
+    .kqr-cat-head{display:flex;justify-content:space-between;gap:15px;font-size:12px;margin-bottom:8px}
+    .kqr-cat-head span{color:#77736b}
+    .kqr-cat-track{height:5px;background:#ded8cf}
+    .kqr-cat-fill{height:100%;background:#111;transition:width .8s ease}
+    .kqr-result-cta{display:flex;align-items:center;justify-content:space-between;gap:25px;margin-top:32px;padding-top:26px;border-top:1px solid #d8d2c8}
+    .kqr-result-cta p{margin:0;color:#68645d;font-size:13px;max-width:420px}
+    .kqr-cta-btn{background:#111;color:white;padding:15px 20px;text-transform:uppercase;letter-spacing:.08em;font-size:11px;white-space:nowrap}
+    .kqr-restart{display:block;margin:25px auto 0;background:none;border:0;color:#8a867d;text-decoration:underline;cursor:pointer;font-size:11px}
+    .kqr-footnote{font-size:10px;color:#77736b;margin-top:16px}
+
+    @media(max-width:850px){
+      .nav-links{
+        display:none;
+        position:absolute;
+        top:76px;
+        left:0;
+        right:0;
+        width:100%;
+        flex-direction:column;
+        gap:0;
+        padding:8px 24px 18px;
+        background:rgba(244,241,235,.98);
+        border-bottom:1px solid rgba(17,17,17,.10);
+        box-shadow:0 12px 25px rgba(0,0,0,.08);
+      }
+      .nav-links.open{display:flex}
+      .nav-links a{
+        display:block;
+        padding:16px 0;
+        border-bottom:1px solid rgba(17,17,17,.08);
+        font-size:14px;
+      }
+      .nav-links a:last-child{border-bottom:0}
+      .nav-cta{display:none}
+      .menu{
+        display:grid;
+        place-items:center;
+        width:42px;
+        height:42px;
+        padding:0;
+        border:1px solid rgba(17,17,17,.15);
+        color:var(--ink);
+        cursor:pointer;
+        font-size:22px;
+      }
+      .hero-grid,.intro-grid,.stack-grid,.cta-inner{grid-template-columns:1fr;gap:45px}
+      .hero{padding-top:125px}
+      .hero-grid{min-height:auto}
+      .hero-note{justify-self:start}
+      .services{grid-template-columns:1fr 1fr}
+      .service:not(:nth-child(3n+1)){padding-left:0;border-left:0}
+      .service:nth-child(even){padding-left:25px;border-left:1px solid #333}
+      .process-grid{grid-template-columns:1fr 1fr}
+      .step:nth-child(3){border-left:0;padding-left:0}
+      .step:nth-child(2),.step:nth-child(4){padding-left:24px}
+    }
+    @media(max-width:560px){
+      .container{width:min(calc(100% - 30px),var(--max))}
+      .nav-inner{height:66px}
+      .nav-links{top:66px;padding-left:15px;padding-right:15px}
+      .brand-name{font-size:23px}
+      .hero h1{font-size:58px}
+      .hero-copy{font-size:16px}
+      .intro,.process,.stack,.cta,.dark-section,.cases{padding:78px 0}
+      .section-head{display:block;margin-bottom:45px}
+      .section-head .desc{margin-top:25px}
+      .services,.process-grid,.case-grid{grid-template-columns:1fr}
+      .service,.service:nth-child(even),.step,.step:nth-child(2),.step:nth-child(4){
+        padding-left:0;border-left:0;
+      }
+      .service{min-height:auto;padding-bottom:32px}
+      .case{min-height:270px}
+      .footer-inner{display:block}
+      .footer-inner div+div{margin-top:8px}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <a href="#" class="brand" aria-label="Praxis home">
+      <div class="mark">P</div>
+      <div>
+        <div class="brand-name">Praxis</div>
+        <span class="brand-sub">Digital Systems Studio</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#process">Process</a>
+      <a href="#use-cases">Use cases</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a class="nav-cta" href="#contact">Start a project</a>
+    <button class="menu" aria-label="Open navigation menu" aria-expanded="false" onclick="toggleMenu()">☰</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow"><span class="gold-line"></span>Business automation · Eswatini</div>
+      <h1>Make the work <em>disappear.</em></h1>
+      <p class="hero-copy">
+        Praxis helps businesses remove repetitive work by connecting the tools they already use —
+        from Google Sheets and Excel to Make.com and automated workflows.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="https://wa.me/26878884993?text=Hello%20Praxis%2C%20I%27d%20like%20to%20discuss%20an%20automation%20project." target="_blank" rel="noopener">Talk on WhatsApp</a>
+        <a class="btn ghost" href="#services">Explore services</a>
+      </div>
+    </div>
+    <div class="hero-note">
+      <strong class="serif">Precision through simplicity.</strong>
+      We design practical systems that reduce manual work, improve consistency and give teams more time to focus on the work that actually matters.
+    </div>
+  </div>
+</header>
+
+<section class="intro">
+  <div class="container intro-grid">
+    <div>
+      <div class="eyebrow">01 / The idea</div>
+      <h2>Your business shouldn't depend on copy, paste and follow-up.</h2>
+    </div>
+    <div class="intro-text">
+      <p>
+        Repetitive admin quietly costs businesses hours every week: moving data between spreadsheets,
+        sending the same emails, updating records, preparing reports and chasing routine tasks.
+      </p>
+      <p>
+        Praxis turns those processes into connected workflows that run with less human intervention —
+        while keeping your existing tools at the centre of the system.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="services" class="dark-section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow" style="color:#77736b">02 / What we build</div>
+        <h2>Systems that do the<br>busy work.</h2>
+      </div>
+      <div class="desc">
+        We focus on practical automation — the kind that solves a real bottleneck,
+        fits the way your team already works and can be understood after handover.
+      </div>
+    </div>
+
+    <div class="services">
+      <article class="service">
+        <div class="service-number">01</div>
+        <h3>Workflow Automation</h3>
+        <p>Connect forms, spreadsheets, email, CRM tools and other apps so information moves automatically.</p>
+        <div class="tags"><span class="tag">Make.com</span><span class="tag">Webhooks</span><span class="tag">Integrations</span></div>
+      </article>
+      <article class="service">
+        <div class="service-number">02</div>
+        <h3>Google Sheets Systems</h3>
+        <p>Turn ordinary Sheets into reliable operational tools with formulas, scripts, dashboards and automated flows.</p>
+        <div class="tags"><span class="tag">Sheets</span><span class="tag">Apps Script</span><span class="tag">Dashboards</span></div>
+      </article>
+      <article class="service">
+        <div class="service-number">03</div>
+        <h3>Excel Automation</h3>
+        <p>Improve existing workbooks and automate repetitive reporting, calculations, data cleaning and processes.</p>
+        <div class="tags"><span class="tag">Excel</span><span class="tag">VBA</span><span class="tag">Power Query</span></div>
+      </article>
+      <article class="service">
+        <div class="service-number">04</div>
+        <h3>Reporting & Dashboards</h3>
+        <p>Bring scattered business data together into clearer reports and management dashboards.</p>
+        <div class="tags"><span class="tag">KPIs</span><span class="tag">Reporting</span><span class="tag">Data</span></div>
+      </article>
+      <article class="service">
+        <div class="service-number">05</div>
+        <h3>Document & Admin Flows</h3>
+        <p>Reduce manual document handling, notifications, approvals and routine administrative work.</p>
+        <div class="tags"><span class="tag">Forms</span><span class="tag">Email</span><span class="tag">Approvals</span></div>
+      </article>
+      <article class="service">
+        <div class="service-number">06</div>
+        <h3>Custom Business Systems</h3>
+        <p>When a spreadsheet has become a system, we can structure it into something cleaner, simpler and easier to operate.</p>
+        <div class="tags"><span class="tag">Operations</span><span class="tag">Finance</span><span class="tag">Custom</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="process" class="process">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">03 / How it works</div>
+        <h2>Simple from<br>problem to system.</h2>
+      </div>
+      <div class="desc">
+        You don't need to know which tool to use. Tell us where the work gets stuck;
+        we'll map the process and recommend a practical solution.
+      </div>
+    </div>
+    <div class="process-grid">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Map</h3>
+        <p>We understand the current workflow, where people spend time and where errors or delays happen.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Design</h3>
+        <p>We choose the simplest combination of tools and design the automation around your actual process.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Build</h3>
+        <p>We connect the systems, test the workflow and make sure the important edge cases are handled.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Handover</h3>
+        <p>You receive a working system, an explanation of how it works and support for the next step.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="use-cases" class="cases">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">04 / Possibilities</div>
+        <h2>Start with one<br>repetitive process.</h2>
+      </div>
+      <div class="desc">
+        The best automation opportunities are usually hiding inside everyday work.
+        Here are examples of what Praxis can help streamline.
+      </div>
+    </div>
+    <div class="case-grid">
+      <article class="case">
+        <div class="mini">Finance & admin</div>
+        <div>
+          <h3>Automated finance workflows.</h3>
+          <p>Capture transactions, consolidate information, generate reports and send routine notifications without repeatedly rebuilding the same files.</p>
+        </div>
+      </article>
+      <article class="case">
+        <div class="mini">Sales & leads</div>
+        <div>
+          <h3>From enquiry to follow-up.</h3>
+          <p>Route new leads, record them in a central sheet or CRM, notify the right person and keep follow-ups organised.</p>
+        </div>
+      </article>
+      <article class="case">
+        <div class="mini">Operations</div>
+        <div>
+          <h3>Replace repetitive admin.</h3>
+          <p>Automate recurring data entry, approvals, status updates, reminders and handoffs between people and systems.</p>
+        </div>
+      </article>
+      <article class="case">
+        <div class="mini">Reporting</div>
+        <div>
+          <h3>Reports that prepare themselves.</h3>
+          <p>Bring information together on a schedule so your team spends less time preparing reports and more time using them.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="stack">
+  <div class="container stack-grid">
+    <div class="stack-copy">
+      <div class="eyebrow">05 / The toolkit</div>
+      <h2>Use what already works.</h2>
+      <p>
+        Praxis doesn't believe every business needs a new platform. We work with the tools
+        you already understand and connect them intelligently.
+      </p>
+    </div>
+    <div class="stack-list">
+      <div class="stack-item"><strong>Make.com</strong><span>Workflow automation</span></div>
+      <div class="stack-item"><strong>Google Sheets</strong><span>Data & operations</span></div>
+      <div class="stack-item"><strong>Microsoft Excel</strong><span>Models & automation</span></div>
+      <div class="stack-item"><strong>Google Workspace</strong><span>Business productivity</span></div>
+      <div class="stack-item"><strong>APIs & Webhooks</strong><span>Connected systems</span></div>
+      <div class="stack-item"><strong>AI tools</strong><span>Where they genuinely help</span></div>
+    </div>
+  </div>
+</section>
+
+
+<section id="free-audit" class="kqr-section">
+  <div class="container kqr-shell">
+    <div class="kqr-top">
+      <div>
+        <div class="eyebrow" style="color:#77736b">Free Audit / KQR</div>
+        <h2>How ready is your business to scale?</h2>
+      </div>
+      <p class="kqr-intro">15 questions. One clear picture of where automation can create the most leverage.</p>
+    </div>
+
+    <div class="kqr-card" id="kqr">
+      <div class="kqr-progress-meta">
+        <span id="kqrProgressText">Question 1 of 15</span>
+        <span id="kqrPercent">7%</span>
+      </div>
+      <div class="kqr-progress-track"><div class="kqr-progress-bar" id="kqrProgressBar"></div></div>
+
+      <div class="kqr-stage" id="kqrStage"></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="cta">
+  <div class="container cta-inner">
+    <div>
+      <div class="eyebrow" style="color:#77736b">06 / Start a project</div>
+      <h2>What repetitive work is slowing your business down?</h2>
+      <p>
+        Send us the problem in plain language. You don't need a technical specification.
+        We'll help you identify what can be automated and what the simplest solution could look like.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="https://wa.me/26878884993?text=Hello%20Praxis%2C%20I%27d%20like%20to%20discuss%20an%20automation%20project." target="_blank" rel="noopener">Message on WhatsApp</a>
+        <a class="btn ghost" href="mailto:praxis.digital.sz@gmail.com?subject=Automation%20Project%20Enquiry">Send an email</a>
+      </div>
+    </div>
+    <div class="contact-card">
+      <div class="contact-row">
+        <div class="contact-label">Email</div>
+        <div class="contact-value"><a href="mailto:praxis.digital.sz@gmail.com">praxis.digital.sz@gmail.com</a></div>
+      </div>
+      <div class="contact-row">
+        <div class="contact-label">WhatsApp</div>
+        <div class="contact-value"><a href="https://wa.me/26878884993" target="_blank" rel="noopener">+268 7888 4993</a></div>
+      </div>
+      <div class="contact-row">
+        <div class="contact-label">Studio</div>
+        <div class="contact-value">Eswatini · Digital systems & automation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div>© 2026 Praxis Digital Systems Studio. All rights reserved.</div>
+    <div>Precision through simplicity.</div>
+  </div>
+</footer>
+
+<script>
+  // Mobile navigation
+  function toggleMenu(){
+    const nav = document.querySelector('.nav-links');
+    const button = document.querySelector('.menu');
+    const isOpen = nav.classList.toggle('open');
+    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    button.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+    button.textContent = isOpen ? '×' : '☰';
+  }
+
+  document.querySelectorAll('.nav-links a').forEach(link=>{
+    link.addEventListener('click', ()=>{
+      const nav = document.querySelector('.nav-links');
+      const button = document.querySelector('.menu');
+      nav.classList.remove('open');
+      button.setAttribute('aria-expanded','false');
+      button.setAttribute('aria-label','Open navigation menu');
+      button.textContent='☰';
+    });
+  });
+
+  // Small reveal effect — intentionally lightweight and dependency-free.
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.style.opacity='1';
+        entry.target.style.transform='translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  },{threshold:.08});
+
+  document.querySelectorAll('.service,.step,.case,.stack-item').forEach(el=>{
+    el.style.opacity='0';
+    el.style.transform='translateY(14px)';
+    el.style.transition='opacity .65s ease, transform .65s ease';
+    observer.observe(el);
+  });
+</script>
+
+<script>
+(() => {
+  /*
+   * KQR storage:
+   * - Every completed audit is saved locally as a fallback.
+   * - To send completed audits to a backend/Google Apps Script endpoint,
+   *   set PRAXIS_AUDIT_ENDPOINT to your POST URL below.
+   *   The component will POST {name,email,answers,score,tier,categoryBreakdown}.
+   */
+  const PRAXIS_AUDIT_ENDPOINT = "https://script.google.com/macros/s/AKfycbwRKTqKo_2t7H22jw396158pbyiiNZvgpWr8Q8BAveSz6nYjrc9DhbF4B6HMxYqqfXO/exec";
+
+  const questions = [
+    {category:"Foundation", q:"How clearly are your core business processes documented?", a:[
+      ["Not documented — most knowledge is in people's heads.",0],
+      ["Some notes or SOPs exist, but they are inconsistent.",1],
+      ["Key processes are documented and followed.",3],
+      ["Processes are documented, measured and regularly improved.",4]
+    ]},
+    {category:"Digital Presence", q:"How much of your customer journey can happen online without manual intervention?", a:[
+      ["Almost none — enquiries and transactions are mostly offline.",0],
+      ["Customers can find us online, but the journey is mostly manual.",1],
+      ["Most enquiries, bookings or sales have a digital path.",3],
+      ["The digital journey is connected from discovery to follow-up.",4]
+    ]},
+    {category:"Brand & Identity", q:"How consistent is your business information and brand across channels?", a:[
+      ["It varies a lot depending on who is communicating.",0],
+      ["We have basic branding, but information gets outdated.",1],
+      ["Our brand and business information are mostly consistent.",3],
+      ["We have clear brand rules and a single reliable source of truth.",4]
+    ]},
+    {category:"Marketing", q:"How much of your marketing follow-up happens automatically?", a:[
+      ["Almost nothing is automated.",0],
+      ["We use some scheduled posts or broadcasts.",1],
+      ["Leads and campaigns have some automated follow-up.",3],
+      ["Lead capture, nurturing and reporting are highly automated.",4]
+    ]},
+    {category:"Payments & Finance", q:"How efficiently do you capture and reconcile financial information?", a:[
+      ["Mostly manual — spreadsheets, messages and receipts.",0],
+      ["We use digital tools but still re-enter a lot of information.",1],
+      ["Most transactions are recorded digitally and reconciled routinely.",3],
+      ["Finance data flows between systems with automated checks and reporting.",4]
+    ]},
+    {category:"Payments & Finance", q:"How quickly can you see the numbers that matter to the business?", a:[
+      ["We usually wait until month-end or someone prepares a report.",0],
+      ["We can get the numbers, but it takes manual work.",1],
+      ["We have regular dashboards or reports for key metrics.",3],
+      ["Important financial KPIs are available quickly and reliably.",4]
+    ]},
+    {category:"Operations", q:"How much repetitive data entry does your team do each week?", a:[
+      ["A lot — it is a normal part of everyone's workload.",0],
+      ["There are several repetitive tasks we know should be automated.",1],
+      ["Some tasks are automated, but gaps remain.",3],
+      ["Most recurring data movement is automated or intentionally streamlined.",4]
+    ]},
+    {category:"Operations", q:"What happens when a routine task is missed?", a:[
+      ["We often only discover it when a customer or manager follows up.",0],
+      ["Someone keeps manual reminders or checklists.",1],
+      ["We have procedures and some notifications.",3],
+      ["Systems trigger reminders, exceptions and escalations automatically.",4]
+    ]},
+    {category:"Customer Experience", q:"How consistently do customers receive updates after they contact you?", a:[
+      ["It depends on the person handling the enquiry.",0],
+      ["We follow up manually when we remember.",1],
+      ["We have standard responses and some automated messages.",3],
+      ["Customers receive timely, personalised updates through connected workflows.",4]
+    ]},
+    {category:"Supply Chain", q:"How visible are stock, suppliers, orders or other key resources?", a:[
+      ["We rely heavily on manual checks and messages.",0],
+      ["We have spreadsheets or systems, but information can be delayed.",1],
+      ["We can usually see the status of key resources.",3],
+      ["Inventory/orders/suppliers are tracked with alerts and connected data.",4]
+    ]},
+    {category:"Team & HR", q:"How much of your routine HR/admin work is systemised?", a:[
+      ["Onboarding, leave, records and admin are mostly manual.",0],
+      ["We have templates and spreadsheets for some tasks.",1],
+      ["Core HR processes use shared systems and standard workflows.",3],
+      ["Routine HR/admin tasks are connected, tracked and automated.",4]
+    ]},
+    {category:"Technology & Data", q:"How connected are the tools your business uses?", a:[
+      ["Most tools operate as separate islands.",0],
+      ["We move information between tools manually.",1],
+      ["Some tools are integrated through connectors or shared data.",3],
+      ["Our core systems exchange data automatically with clear ownership.",4]
+    ]},
+    {category:"Technology & Data", q:"How confident are you in the quality of your business data?", a:[
+      ["Data is scattered, duplicated or frequently inaccurate.",0],
+      ["We clean data manually when problems appear.",1],
+      ["We have standards and regular checks for important data.",3],
+      ["Data has clear owners, validation and reliable reporting.",4]
+    ]},
+    {category:"Growth & Strategy", q:"If your customer volume doubled next year, how well would your current systems cope?", a:[
+      ["We would probably need to hire people just to handle the extra admin.",0],
+      ["We could cope, but many processes would become painful.",1],
+      ["We have systems that could handle significant growth.",3],
+      ["Our systems are deliberately designed to scale with demand.",4]
+    ]},
+    {category:"Goal", q:"What would make this audit valuable to you?", a:[
+      ["I mainly want to understand what automation is.",0],
+      ["I want to identify a few tasks we could improve.",1],
+      ["I want a practical automation roadmap for the business.",3],
+      ["I am ready to automate a high-value process and measure the result.",4]
+    ]}
+  ];
+
+  const state = { index:0, answers:Array(questions.length).fill(null), lead:null };
+
+  const stage = document.getElementById("kqrStage");
+  const progressText = document.getElementById("kqrProgressText");
+  const percent = document.getElementById("kqrPercent");
+  const progressBar = document.getElementById("kqrProgressBar");
+
+  function escapeHTML(value){
+    return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  }
+
+  function renderQuestion(){
+    const q = questions[state.index];
+    const n = state.index + 1;
+    const pct = Math.round((n / questions.length) * 100);
+    progressText.textContent = `Question ${n} of ${questions.length}`;
+    percent.textContent = `${pct}%`;
+    progressBar.style.width = `${pct}%`;
+
+    stage.innerHTML = `
+      <div class="kqr-question-wrap">
+        <div class="kqr-category">${escapeHTML(q.category)}</div>
+        <h3 class="kqr-question">${escapeHTML(q.q)}</h3>
+        <div class="kqr-options">
+          ${q.a.map((item,i)=>`
+            <button class="kqr-option" type="button" data-choice="${i}">
+              <span class="kqr-dot"></span><span>${escapeHTML(item[0])}</span>
+            </button>`).join("")}
+        </div>
+        <div class="kqr-nav">
+          <button class="kqr-back" type="button" id="kqrBack" ${state.index===0?"disabled":""}>← Back</button>
+          <button class="kqr-next" type="button" id="kqrNext" disabled>${state.index===questions.length-1?"Finish assessment":"Next question →"}</button>
+        </div>
+      </div>`;
+
+    const options = stage.querySelectorAll(".kqr-option");
+    const next = stage.querySelector("#kqrNext");
+    options.forEach((btn,i)=>{
+      if(state.answers[state.index] === i){
+        btn.style.background="#111"; btn.style.color="#fff"; btn.style.borderColor="#111";
+        btn.querySelector(".kqr-dot").style.borderColor="#fff";
+        btn.querySelector(".kqr-dot").style.background="#c6a46a";
+      }
+      btn.addEventListener("click",()=>{
+        state.answers[state.index]=i;
+        options.forEach(o=>{
+          o.style.background="#fbfaf7"; o.style.color="#111"; o.style.borderColor="#d2cdc3";
+          o.querySelector(".kqr-dot").style.borderColor="#aaa59c";
+          o.querySelector(".kqr-dot").style.background="transparent";
+        });
+        btn.style.background="#111"; btn.style.color="#fff"; btn.style.borderColor="#111";
+        btn.querySelector(".kqr-dot").style.borderColor="#fff";
+        btn.querySelector(".kqr-dot").style.background="#c6a46a";
+        next.disabled=false;
+      });
+    });
+    stage.querySelector("#kqrBack").addEventListener("click",()=>{
+      if(state.index>0){state.index--;renderQuestion();}
+    });
+    next.addEventListener("click",()=>{
+      if(state.answers[state.index]===null)return;
+      if(state.index < questions.length-1){state.index++;renderQuestion();}
+      else renderLeadGate();
+    });
+  }
+
+  function renderLeadGate(){
+    progressText.textContent="Assessment complete";
+    percent.textContent="100%";
+    progressBar.style.width="100%";
+    stage.innerHTML=`
+      <div class="kqr-gate">
+        <div class="kqr-category">Your results are ready</div>
+        <h3>One last step before we reveal your score.</h3>
+        <p>Enter your name and email to receive your personalised Business Readiness result and the areas where Praxis can help you automate.</p>
+        <form class="kqr-form" id="kqrLeadForm">
+          <div class="kqr-field"><label for="kqrName">Name</label><input id="kqrName" name="name" autocomplete="name" required placeholder="Your name"></div>
+          <div class="kqr-field"><label for="kqrEmail">Email</label><input id="kqrEmail" name="email" type="email" autocomplete="email" required placeholder="you@company.com"></div>
+          <div class="kqr-error" id="kqrError"></div>
+          <button class="kqr-submit" type="submit">Reveal my readiness score →</button>
+          <div class="kqr-footnote">Your details are used to follow up about your audit. No spam.</div>
+        </form>
+      </div>`;
+    stage.querySelector("#kqrLeadForm").addEventListener("submit",e=>{
+      e.preventDefault();
+      const fd=new FormData(e.currentTarget);
+      state.lead={name:String(fd.get("name")).trim(),email:String(fd.get("email")).trim()};
+      if(!state.lead.name || !/^\S+@\S+\.\S+$/.test(state.lead.email)){
+        stage.querySelector("#kqrError").textContent="Please enter a valid name and email.";
+        return;
+      }
+      renderResults();
+      saveAudit();
+    });
+  }
+
+  function calculate(){
+    const raw=state.answers.reduce((sum,ans,i)=>sum+(ans===null?0:questions[i].a[ans][1]),0);
+    const max=questions.reduce((sum,q)=>sum+Math.max(...q.a.map(a=>a[1])),0);
+    const score=Math.round((raw/max)*100);
+    const tier=score<40?"Early":score<70?"Growing":"Scale-Ready";
+    const categories={};
+    questions.forEach((q,i)=>{
+      if(!categories[q.category])categories[q.category]={total:0,max:0};
+      const value=state.answers[i]===null?0:q.a[state.answers[i]][1];
+      categories[q.category].total+=value;
+      categories[q.category].max+=Math.max(...q.a.map(a=>a[1]));
+    });
+    return {score,tier,categories};
+  }
+
+  function renderResults(){
+    const result=calculate();
+    progressText.textContent="Your result";
+    percent.textContent="100%";
+    progressBar.style.width="100%";
+    const entries=Object.entries(result.categories).map(([name,v])=>({
+      name,pct:Math.round((v.total/v.max)*100)
+    }));
+    const strong=entries.filter(x=>x.pct>=70).sort((a,b)=>b.pct-a.pct).slice(0,2);
+    const needs=entries.filter(x=>x.pct<60).sort((a,b)=>a.pct-b.pct).slice(0,2);
+    const strongText=strong.length?strong.map(x=>x.name).join(", "):"the fundamentals";
+    const needsText=needs.length?needs.map(x=>x.name).join(", "):"your next automation opportunity";
+    stage.innerHTML=`
+      <div class="kqr-results">
+        <div class="kqr-score-grid">
+          <div class="kqr-score">
+            <div class="kqr-score-label">Readiness score</div>
+            <div class="kqr-score-number">${result.score}</div>
+            <div class="kqr-tier">${result.tier}</div>
+          </div>
+          <div class="kqr-summary">
+            <div class="kqr-category">Praxis assessment</div>
+            <h3>Your business has a starting point. Now build leverage.</h3>
+            <p>Your strongest signals are in <strong>${escapeHTML(strongText)}</strong>. The clearest areas to improve are <strong>${escapeHTML(needsText)}</strong>.</p>
+            <div class="kqr-insights">
+              <div class="kqr-insight"><strong>Strong:</strong> ${escapeHTML(strongText)}</div>
+              <div class="kqr-insight"><strong>Needs work:</strong> ${escapeHTML(needsText)}</div>
+            </div>
+          </div>
+        </div>
+        <div class="kqr-category-bars">
+          ${entries.map(x=>`
+            <div class="kqr-cat-row">
+              <div class="kqr-cat-head"><strong>${escapeHTML(x.name)}</strong><span>${x.pct}/100</span></div>
+              <div class="kqr-cat-track"><div class="kqr-cat-fill" style="width:${x.pct}%"></div></div>
+            </div>`).join("")}
+        </div>
+        <div class="kqr-result-cta">
+          <p>Want to turn one of these gaps into a working system? Let's identify the highest-value process to automate first.</p>
+          <a class="kqr-cta-btn" href="#contact">Book your free 20-min audit call →</a>
+        </div>
+        <button class="kqr-restart" type="button" id="kqrRestart">Retake the audit</button>
+      </div>`;
+    stage.querySelector("#kqrRestart").addEventListener("click",()=>{
+      state.index=0;state.answers=Array(questions.length).fill(null);state.lead=null;renderQuestion();
+    });
+  }
+
+  async function saveAudit(){
+    const result=calculate();
+    const payload={
+      timestamp:new Date().toISOString(),
+      name:state.lead.name,
+      email:state.lead.email,
+      score:result.score,
+      tier:result.tier,
+      answers:questions.map((q,i)=>({
+        category:q.category,
+        question:q.q,
+        answer:state.answers[i]===null?null:q.a[state.answers[i]][0],
+        points:state.answers[i]===null?0:q.a[state.answers[i]][1]
+      })),
+      categoryBreakdown:Object.fromEntries(
+        Object.entries(result.categories).map(([k,v])=>[k,Math.round((v.total/v.max)*100)])
+      )
+    };
+
+    try{
+      const existing=JSON.parse(localStorage.getItem("praxis_kqr_audits")||"[]");
+      existing.push(payload);
+      localStorage.setItem("praxis_kqr_audits",JSON.stringify(existing));
+    }catch(e){}
+
+    if(PRAXIS_AUDIT_ENDPOINT && !PRAXIS_AUDIT_ENDPOINT.includes("PASTE_YOUR_")){
+      try{
+        // text/plain is intentionally used so Google Apps Script can receive
+        // the request without a browser CORS preflight.
+        await fetch(PRAXIS_AUDIT_ENDPOINT,{
+          method:"POST",
+          headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:JSON.stringify(payload)
+        });
+      }catch(e){
+        console.warn("Praxis KQR remote storage failed; local fallback retained.",e);
+      }
+    }
+  }
+
+  renderQuestion();
+})();
+</script>
+
+</body>
 </html>
